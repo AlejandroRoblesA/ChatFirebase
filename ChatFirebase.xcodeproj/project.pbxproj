@@ -12,6 +12,7 @@
 		A9E47ED8230BA5E400A292ED /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A9E47ED6230BA5E400A292ED /* Main.storyboard */; };
 		A9E47EDA230BA5E600A292ED /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A9E47ED9230BA5E600A292ED /* Assets.xcassets */; };
 		A9E47EDD230BA5E600A292ED /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A9E47EDB230BA5E600A292ED /* LaunchScreen.storyboard */; };
+		A9E47EE6230BAD2800A292ED /* LoginController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9E47EE5230BAD2800A292ED /* LoginController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -22,6 +23,7 @@
 		A9E47ED9230BA5E600A292ED /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		A9E47EDC230BA5E600A292ED /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		A9E47EDE230BA5E600A292ED /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		A9E47EE5230BAD2800A292ED /* LoginController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -54,6 +56,7 @@
 		A9E47ED1230BA5E400A292ED /* ChatFirebase */ = {
 			isa = PBXGroup;
 			children = (
+				A9E47EE4230BACCC00A292ED /* Controller */,
 				A9E47ED2230BA5E400A292ED /* AppDelegate.swift */,
 				A9E47ED4230BA5E400A292ED /* ViewController.swift */,
 				A9E47ED6230BA5E400A292ED /* Main.storyboard */,
@@ -62,6 +65,14 @@
 				A9E47EDE230BA5E600A292ED /* Info.plist */,
 			);
 			path = ChatFirebase;
+			sourceTree = "<group>";
+		};
+		A9E47EE4230BACCC00A292ED /* Controller */ = {
+			isa = PBXGroup;
+			children = (
+				A9E47EE5230BAD2800A292ED /* LoginController.swift */,
+			);
+			path = Controller;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -135,6 +146,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A9E47EE6230BAD2800A292ED /* LoginController.swift in Sources */,
 				A9E47ED5230BA5E400A292ED /* ViewController.swift in Sources */,
 				A9E47ED3230BA5E400A292ED /* AppDelegate.swift in Sources */,
 			);
