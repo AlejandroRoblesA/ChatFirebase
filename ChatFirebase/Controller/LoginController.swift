@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import FirebaseAuth
 
 class LoginController: UIViewController {
     
@@ -19,13 +20,14 @@ class LoginController: UIViewController {
         return view
     }()
     
-    let loginRegisterButton: UIButton = {
+    lazy var loginRegisterButton: UIButton = {
         let button = UIButton(type: .system)
         button.backgroundColor = UIColor(r: 80, g: 101, b: 161)
         button.setTitle("Register", for: .normal)
         button.translatesAutoresizingMaskIntoConstraints = false
         button.setTitleColor(.white, for: .normal)
         button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 16)
+        button.addTarget(self, action: #selector(handleRegister), for: .touchUpInside)
         return button
     }()
     
@@ -141,7 +143,18 @@ class LoginController: UIViewController {
         loginRegisterButton.heightAnchor.constraint(equalToConstant: 50).isActive = true
     }
     
-    
+    @objc func handleRegister(){
+        
+        guard let email = emailTextField.text, let password = passwordTextField.text else { return }
+        
+        Auth.auth().createUser(withEmail: email, password: password) { [weak self] (user, error) in
+            if (error != nil){
+                print(error)
+                return
+            }
+        }
+        print("USER REGISTER:::")
+    }
     
     override var preferredStatusBarStyle: UIStatusBarStyle{
         return .lightContent
