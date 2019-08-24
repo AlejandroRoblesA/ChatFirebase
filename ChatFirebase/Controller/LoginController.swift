@@ -28,7 +28,7 @@ class LoginController: UIViewController {
         button.translatesAutoresizingMaskIntoConstraints = false
         button.setTitleColor(.white, for: .normal)
         button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 16)
-        button.addTarget(self, action: #selector(handleRegister), for: .touchUpInside)
+        button.addTarget(self, action: #selector(handleLoginRegister), for: .touchUpInside)
         return button
     }()
     
@@ -188,6 +188,27 @@ class LoginController: UIViewController {
         loginRegisterButton.topAnchor.constraint(equalTo: inputsContainerView.bottomAnchor, constant: 12).isActive = true
         loginRegisterButton.widthAnchor.constraint(equalTo: inputsContainerView.widthAnchor).isActive = true
         loginRegisterButton.heightAnchor.constraint(equalToConstant: 50).isActive = true
+    }
+    
+    @objc func handleLoginRegister(){
+        if loginRegisterSegmentedControl.selectedSegmentIndex == 0{
+            handleLogin()
+        }else{
+            handleRegister()
+        }
+    }
+    
+    @objc func handleLogin(){
+        guard let email    = emailTextField.text,
+            let password = passwordTextField.text else { return }
+        
+        Auth.auth().signIn(withEmail: email, password: password) { [weak self] (user, error) in
+            if (error != nil){
+                print(error!)
+                return
+            }
+            self?.dismiss(animated: true, completion: nil)
+        }
     }
     
     @objc func handleRegister(){
