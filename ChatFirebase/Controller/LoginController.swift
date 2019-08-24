@@ -8,6 +8,7 @@
 
 import UIKit
 import FirebaseAuth
+import FirebaseDatabase
 
 class LoginController: UIViewController {
     
@@ -145,15 +146,28 @@ class LoginController: UIViewController {
     
     @objc func handleRegister(){
         
-        guard let email = emailTextField.text, let password = passwordTextField.text else { return }
+        guard let email    = emailTextField.text,
+              let password = passwordTextField.text,
+              let name     = nameTextField.text else { return }
         
         Auth.auth().createUser(withEmail: email, password: password) { [weak self] (user, error) in
             if (error != nil){
-                print(error)
+                print(error!)
                 return
             }
+            
+            let ref = Database.database().reference(fromURL: "https://chat-11c7d.firebaseio.com/")
+            let userReference = ref.child("Users")
+            let values = ["names": name, "email": email]
+            userReference.updateChildValues(values, withCompletionBlock: { (err, ref) in
+                if (err != nil){
+                    print(err)
+                    return
+                }
+                
+                print("Saved user successfully into Firebase db")
+            })
         }
-        print("USER REGISTER:::")
     }
     
     override var preferredStatusBarStyle: UIStatusBarStyle{
