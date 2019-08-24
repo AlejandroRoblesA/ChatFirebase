@@ -8,6 +8,7 @@
 
 import UIKit
 import FirebaseDatabase
+import FirebaseAuth
 
 class ViewController: UITableViewController {
 
@@ -18,9 +19,20 @@ class ViewController: UITableViewController {
 //        ref.updateChildValues(["someValue": 123123])
         
         navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Logout", style: .plain, target: self, action: #selector(handleLogout))
+        
+        if (Auth.auth().currentUser?.uid == nil){
+            perform(#selector(handleLogout), with: nil, afterDelay: 0)
+        }
     }
     
     @objc func handleLogout(){
+        
+        do {
+            try Auth.auth().signOut()
+        } catch let signOutError as NSError {
+            print ("Error signing out: %@", signOutError)
+        }
+        
         let loginController = LoginController()
         present(loginController, animated: true, completion: nil)
     }
