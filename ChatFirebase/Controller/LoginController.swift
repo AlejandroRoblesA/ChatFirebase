@@ -87,7 +87,8 @@ class LoginController: UIViewController {
     }()
     
     @objc func handleRegisterLoginChange(){
-        
+        let title = loginRegisterSegmentedControl.titleForSegment(at: loginRegisterSegmentedControl.selectedSegmentIndex)
+        loginRegisterButton.setTitle(title, for: .normal)
     }
 
     override func viewDidLoad() {
