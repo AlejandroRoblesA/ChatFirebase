@@ -17,7 +17,17 @@ class MessagesController: UITableViewController {
         
         navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Logout", style: .plain, target: self, action: #selector(handleLogout))
         
+        navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Chat", style: .plain, target: self, action: #selector(handleNewMessage))
+        
+        //navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(named: "blade"), style: .plain, target: self, action: #selector(handleNewMessage))
+        
         checkIfUserIsLoggedIn()
+    }
+    
+    @objc func handleNewMessage(){
+        let newMessageController = NewMessageController()
+        let navController = UINavigationController(rootViewController: newMessageController)
+        present(navController, animated: true, completion: nil)
     }
     
     func checkIfUserIsLoggedIn(){
