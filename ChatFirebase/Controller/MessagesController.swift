@@ -10,18 +10,28 @@ import UIKit
 import FirebaseDatabase
 import FirebaseAuth
 
-class ViewController: UITableViewController {
+class MessagesController: UITableViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
         
-//        let ref = Database.database().reference(fromURL: "https://chat-11c7d.firebaseio.com/")
-//        ref.updateChildValues(["someValue": 123123])
-        
         navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Logout", style: .plain, target: self, action: #selector(handleLogout))
         
+        checkIfUserIsLoggedIn()
+    }
+    
+    func checkIfUserIsLoggedIn(){
         if (Auth.auth().currentUser?.uid == nil){
             perform(#selector(handleLogout), with: nil, afterDelay: 0)
+        }
+        else{
+            let uid = Auth.auth().currentUser?.uid
+            Database.database().reference().child("users").child(uid!).observeSingleEvent(of: .value, with: { [weak self] (snapshot) in
+                if let dictionary = snapshot.value as? [String: AnyObject]{
+                    self?.navigationItem.title = dictionary["name"] as? String
+                }
+            }, withCancel: nil)
+            
         }
     }
     
@@ -37,4 +47,3 @@ class ViewController: UITableViewController {
         present(loginController, animated: true, completion: nil)
     }
 }
-

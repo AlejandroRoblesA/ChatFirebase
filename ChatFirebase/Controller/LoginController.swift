@@ -200,7 +200,7 @@ class LoginController: UIViewController {
     
     @objc func handleLogin(){
         guard let email    = emailTextField.text,
-            let password = passwordTextField.text else { return }
+              let password = passwordTextField.text else { return }
         
         Auth.auth().signIn(withEmail: email, password: password) { [weak self] (user, error) in
             if (error != nil){
