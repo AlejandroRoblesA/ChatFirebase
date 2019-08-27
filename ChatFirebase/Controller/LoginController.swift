@@ -228,7 +228,7 @@ class LoginController: UIViewController {
             
             let ref = Database.database().reference(fromURL: "https://chat-11c7d.firebaseio.com/")
             let userReference = ref.child("Users").child(uid)
-            let values = ["names": name, "email": email]
+            let values = ["name": name, "email": email]
             userReference.updateChildValues(values, withCompletionBlock: { (err, ref) in
                 if (err != nil){
                     print(err!)

@@ -36,7 +36,7 @@ class MessagesController: UITableViewController {
         }
         else{
             let uid = Auth.auth().currentUser?.uid
-            Database.database().reference().child("users").child(uid!).observeSingleEvent(of: .value, with: { [weak self] (snapshot) in
+            Database.database().reference().child("Users").child(uid!).observeSingleEvent(of: .value, with: { [weak self] (snapshot) in
                 if let dictionary = snapshot.value as? [String: AnyObject]{
                     self?.navigationItem.title = dictionary["name"] as? String
                 }
