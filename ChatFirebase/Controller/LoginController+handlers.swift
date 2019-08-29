@@ -58,7 +58,9 @@ extension LoginController: UIImagePickerControllerDelegate, UINavigationControll
             
             guard let uid = user?.user.uid else { return }
             
-            let storageReference = Storage.storage().reference().child("myImage.png")
+            let imageName = NSUUID().uuidString
+            
+            let storageReference = Storage.storage().reference().child("profile_images").child("\(imageName).png")
             
             if let uploadData = self.profileImageView.image!.pngData(){
                 storageReference.putData(uploadData, metadata: nil, completion: { (metadata, error) in
@@ -66,24 +68,34 @@ extension LoginController: UIImagePickerControllerDelegate, UINavigationControll
                         print(error!)
                         return
                     }
-                    print(metadata!)
+                    
+                    storageReference.downloadURL(completion: { (url, error) in
+                        if let profileImageURL = url?.absoluteString{
+                            let values = ["name": name, "email": email, "profileImageUrl": profileImageURL]
+                            self.registerUserIntoDatabaseWithUID(uid: uid, values: values)
+                        }
+                    })
+                    
+                   
                 })
             }
             
             
-            
-            let ref = Database.database().reference(fromURL: "https://chat-11c7d.firebaseio.com/")
-            let userReference = ref.child("Users").child(uid)
-            let values = ["name": name, "email": email]
-            userReference.updateChildValues(values, withCompletionBlock: { (err, ref) in
-                if (err != nil){
-                    print(err!)
-                    return
-                }
-                
-                self.dismiss(animated: true, completion: nil)
-            })
         }
+    }
+    
+    private func registerUserIntoDatabaseWithUID(uid: String, values: [String: Any]){
+        let ref = Database.database().reference(fromURL: "https://chat-11c7d.firebaseio.com/")
+        let userReference = ref.child("Users").child(uid)
+        
+        userReference.updateChildValues(values, withCompletionBlock: { (err, ref) in
+            if (err != nil){
+                print(err!)
+                return
+            }
+            
+            self.dismiss(animated: true, completion: nil)
+        })
     }
 }
 
