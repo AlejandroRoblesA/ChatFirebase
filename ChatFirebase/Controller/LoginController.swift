@@ -68,12 +68,14 @@ class LoginController: UIViewController {
         return textField
     }()
     
-    let profileImageView: UIImageView = {
+    lazy var profileImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.image = UIImage(named: "dragon")?.withRenderingMode(.alwaysTemplate)
         imageView.tintColor = .white
         imageView.translatesAutoresizingMaskIntoConstraints = false
         imageView.contentMode = .scaleAspectFill
+        imageView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleSelectProfileImageView)))
+        imageView.isUserInteractionEnabled = true
         return imageView
     }()
     
@@ -239,6 +241,8 @@ class LoginController: UIViewController {
             })
         }
     }
+    
+    
     
     override var preferredStatusBarStyle: UIStatusBarStyle{
         return .lightContent
