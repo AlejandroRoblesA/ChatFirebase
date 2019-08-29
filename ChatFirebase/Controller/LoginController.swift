@@ -213,37 +213,6 @@ class LoginController: UIViewController {
         }
     }
     
-    @objc func handleRegister(){
-        
-        guard let email    = emailTextField.text,
-              let password = passwordTextField.text,
-              let name     = nameTextField.text else { return }
-        
-        Auth.auth().createUser(withEmail: email, password: password) { [weak self] (user, error) in
-            
-            if (error != nil){
-                print(error!)
-                return
-            }
-            
-            guard let uid = user?.user.uid else { return }
-            
-            let ref = Database.database().reference(fromURL: "https://chat-11c7d.firebaseio.com/")
-            let userReference = ref.child("Users").child(uid)
-            let values = ["name": name, "email": email]
-            userReference.updateChildValues(values, withCompletionBlock: { (err, ref) in
-                if (err != nil){
-                    print(err!)
-                    return
-                }
-                
-                self?.dismiss(animated: true, completion: nil)
-            })
-        }
-    }
-    
-    
-    
     override var preferredStatusBarStyle: UIStatusBarStyle{
         return .lightContent
     }
