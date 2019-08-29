@@ -43,6 +43,9 @@ class NewMessageController: UITableViewController {
                         if let email = nodoAux["email"] as? String{
                             userData.email = email
                         }
+                        if let imageURL = nodoAux["profileImageUrl"] as? String{
+                            userData.profileImageUrl = imageURL
+                        }
                         if (self.users != nil){
                             self.users?.append(userData)
                         }
@@ -69,6 +72,36 @@ class NewMessageController: UITableViewController {
         let user = users?[indexPath.row]
         cell.textLabel?.text = user?.name
         cell.detailTextLabel?.text = user?.email
+        cell.imageView?.image = UIImage(named: "jade")
+        
+//        if let profileImageURL = user?.profileImageUrl{
+//            let url = URL(string: profileImageURL)
+//            let request = URLRequest(url: url!)
+//            URLSession.shared.dataTask(with: request, completionHandler: { (data, response, error) in
+//                if error != nil{
+//                    print (error!)
+//                    return
+//                }
+//                DispatchQueue.main.async {
+//                    cell.imageView?.image = UIImage(data: data!)
+//                }
+//
+//
+//
+//            }).resume()
+//        }
+        if let profileImageURL = user?.profileImageUrl{
+            let url = URL(string: profileImageURL)
+            URLSession.shared.dataTask(with: url!, completionHandler: { (data, response, error) in
+                if error != nil{
+                    print (error!)
+                    return
+                }
+                DispatchQueue.main.async {
+                    cell.imageView?.image = UIImage(data: data!)
+                }
+            }).resume()
+        }
         return cell
     }
 }
