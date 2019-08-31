@@ -13,6 +13,9 @@ import FirebaseStorage
 
 extension LoginController: UIImagePickerControllerDelegate, UINavigationControllerDelegate{
     
+    //var messagesController: MessagesController?
+    //here it doesn't work because it is an extension, it needs to be declared on the viewController (LoginController)
+    
     @objc func handleSelectProfileImageView(){
         let picker = UIImagePickerController()
         picker.delegate = self
@@ -93,6 +96,8 @@ extension LoginController: UIImagePickerControllerDelegate, UINavigationControll
                 print(err!)
                 return
             }
+            
+            self.messagesController?.fetchUserAndSetupNavBarTitle()
             
             self.dismiss(animated: true, completion: nil)
         })
