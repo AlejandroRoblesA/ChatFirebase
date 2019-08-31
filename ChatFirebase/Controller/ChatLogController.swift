@@ -7,8 +7,17 @@
 //
 
 import UIKit
+import FirebaseDatabase
 
-class ChatLogController: UICollectionViewController{
+class ChatLogController: UICollectionViewController, UITextFieldDelegate{
+    
+    lazy var inputTextField: UITextField = {
+        let textField = UITextField()
+        textField.placeholder = "Write your message..."
+        textField.translatesAutoresizingMaskIntoConstraints = false
+        textField.delegate = self
+        return textField
+    }()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -34,6 +43,7 @@ class ChatLogController: UICollectionViewController{
         let sendButton = UIButton(type: .system)
         sendButton.setTitle("Send", for: .normal)
         sendButton.translatesAutoresizingMaskIntoConstraints = false
+        sendButton.addTarget(self, action: #selector(handleSend), for: .touchUpInside)
         containerView.addSubview(sendButton)
         
         sendButton.rightAnchor.constraint(equalTo: containerView.rightAnchor).isActive = true
@@ -41,9 +51,6 @@ class ChatLogController: UICollectionViewController{
         sendButton.widthAnchor.constraint(equalToConstant: 80).isActive = true
         sendButton.heightAnchor.constraint(equalTo: containerView.heightAnchor).isActive = true
         
-        let inputTextField = UITextField()
-        inputTextField.placeholder = "Write your message..."
-        inputTextField.translatesAutoresizingMaskIntoConstraints = false
         containerView.addSubview(inputTextField)
         
         inputTextField.leftAnchor.constraint(equalTo: containerView.leftAnchor, constant: 8).isActive = true
@@ -62,6 +69,23 @@ class ChatLogController: UICollectionViewController{
         separatorLineView.widthAnchor.constraint(equalTo: containerView.widthAnchor).isActive = true
         separatorLineView.heightAnchor.constraint(equalToConstant: 1).isActive = true
         
+    }
+    
+    @objc func handleSend(){
+        
+        let ref = Database.database().reference().child("messages")
+        let childRef = ref.childByAutoId()
+        
+        let values = ["text": inputTextField.text!, "name": "alejandro"]
+        
+        childRef.updateChildValues(values)
+        
+        
+    }
+    
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        handleSend()
+        return true
     }
     
 }
