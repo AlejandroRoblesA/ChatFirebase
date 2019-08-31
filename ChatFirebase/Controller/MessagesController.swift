@@ -66,7 +66,6 @@ class MessagesController: UITableViewController {
         
         let titleView = UIView()
         titleView.frame = CGRect(x: 0, y: 0, width: 100, height: 40)
-        
         let containerView = UIView()
         containerView.translatesAutoresizingMaskIntoConstraints = false
         titleView.addSubview(containerView)
@@ -76,6 +75,7 @@ class MessagesController: UITableViewController {
         profileImageView.contentMode = .scaleAspectFill
         profileImageView.layer.cornerRadius = 18
         profileImageView.clipsToBounds = true
+        
         if let profileImageUrl = user.profileImageUrl{
             profileImageView.loadImageUsingCacheWithUrlString(urlString: profileImageUrl)
         }
@@ -91,7 +91,6 @@ class MessagesController: UITableViewController {
         
         nameLabel.text = user.name
         nameLabel.translatesAutoresizingMaskIntoConstraints = false
-        
         containerView.addSubview(nameLabel)
         
         nameLabel.leftAnchor.constraint(equalTo: profileImageView.rightAnchor, constant: 8).isActive = true
@@ -102,7 +101,14 @@ class MessagesController: UITableViewController {
         containerView.centerXAnchor.constraint(equalTo: titleView.centerXAnchor).isActive = true
         containerView.centerYAnchor.constraint(equalTo: titleView.centerYAnchor).isActive = true
         
+    
         self.navigationItem.titleView = titleView
+        
+        //titleView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(showChatController)))
+        
+        let tap = UITapGestureRecognizer(target: self, action: #selector(showChatController))
+        navigationController?.view.addGestureRecognizer(tap)
+        
     }
     
     
@@ -117,5 +123,13 @@ class MessagesController: UITableViewController {
         let loginController = LoginController()
         loginController.messagesController = self
         present(loginController, animated: true, completion: nil)
+    }
+    
+    @objc func showChatController(){
+        
+        print("GestureRecognizer")
+        let chatLogController = ChatLogController()
+        
+        navigationController?.pushViewController(chatLogController, animated: true)
     }
 }
