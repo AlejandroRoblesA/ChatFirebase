@@ -127,8 +127,7 @@ class MessagesController: UITableViewController {
     
     @objc func showChatController(){
         
-        print("GestureRecognizer")
-        let chatLogController = ChatLogController()
+        let chatLogController = ChatLogController(collectionViewLayout: UICollectionViewFlowLayout())
         
         navigationController?.pushViewController(chatLogController, animated: true)
     }
