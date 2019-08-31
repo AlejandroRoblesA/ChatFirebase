@@ -66,26 +66,27 @@ extension LoginController: UIImagePickerControllerDelegate, UINavigationControll
             let storageReference = Storage.storage().reference().child("profile_images").child("\(imageName).jpg")
             
             
-            if let uploadData = self.profileImageView.image?.jpegData(compressionQuality: 0.1){
-//            if let uploadData = self.profileImageView.image!.pngData(){
-                storageReference.putData(uploadData, metadata: nil, completion: { (metadata, error) in
-                    if (error != nil){
-                        print(error!)
-                        return
-                    }
+            if let profileImageView = self.profileImageView.image{
+                
+                if let uploadData = profileImageView.jpegData(compressionQuality: 0.1){
                     
-                    storageReference.downloadURL(completion: { (url, error) in
-                        if let profileImageURL = url?.absoluteString{
-                            let values = ["name": name, "email": email, "profileImageUrl": profileImageURL]
-                            self.registerUserIntoDatabaseWithUID(uid: uid, values: values)
+                    storageReference.putData(uploadData, metadata: nil, completion: { (metadata, error) in
+                        if (error != nil){
+                            print(error!)
+                            return
                         }
+                        
+                        storageReference.downloadURL(completion: { (url, error) in
+                            if let profileImageURL = url?.absoluteString{
+                                let values = ["name": name, "email": email, "profileImageUrl": profileImageURL]
+                                self.registerUserIntoDatabaseWithUID(uid: uid, values: values)
+                            }
+                        })
+                        
+                        
                     })
-                    
-                   
-                })
+                }
             }
-            
-            
         }
     }
     
