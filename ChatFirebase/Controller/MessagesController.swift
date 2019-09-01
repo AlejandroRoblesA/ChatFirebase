@@ -25,6 +25,7 @@ class MessagesController: UITableViewController {
     
     @objc func handleNewMessage(){
         let newMessageController = NewMessageController()
+        newMessageController.messagesController = self
         let navController = UINavigationController(rootViewController: newMessageController)
         present(navController, animated: true, completion: nil)
     }
@@ -106,8 +107,8 @@ class MessagesController: UITableViewController {
         
         //titleView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(showChatController)))
         
-        let tap = UITapGestureRecognizer(target: self, action: #selector(showChatController))
-        navigationController?.view.addGestureRecognizer(tap)
+//        let tap = UITapGestureRecognizer(target: self, action: #selector(showChatController))
+//        navigationController?.view.addGestureRecognizer(tap)
         
     }
     
@@ -125,10 +126,10 @@ class MessagesController: UITableViewController {
         present(loginController, animated: true, completion: nil)
     }
     
-    @objc func showChatController(){
+    @objc func showChatControllerForUser(user: User){
         
         let chatLogController = ChatLogController(collectionViewLayout: UICollectionViewFlowLayout())
-        
+        chatLogController.user = user
         navigationController?.pushViewController(chatLogController, animated: true)
     }
 }
