@@ -12,6 +12,12 @@ import FirebaseAuth
 
 class MessagesController: UITableViewController {
     
+    var messages: [Message]?
+    
+    override func viewDidAppear(_ animated: Bool) {
+        observeMessages()
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -19,8 +25,53 @@ class MessagesController: UITableViewController {
         
         navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Chat", style: .plain, target: self, action: #selector(handleNewMessage))
         
-        
         checkIfUserIsLoggedIn()
+        
+    }
+    
+    func observeMessages(){
+        
+        messages?.removeAll()
+        
+        let ref = Database.database().reference().child("messages")
+        
+        ref.observeSingleEvent(of: .value, with: { (snapshot) in
+            
+            for nodo in snapshot.children{
+                if let nodoSnap = nodo as? DataSnapshot{
+                    
+                    if let nodoAux = nodoSnap.value as? [String: Any]{
+                        
+                        let message = Message()
+                        
+                        message.idMessage = nodoSnap.key
+                        
+                        if let text = nodoAux["text"] as? String{
+                            message.text = text
+                        }
+                        if let toId = nodoAux["toId"] as? String{
+                            message.toId = toId
+                        }
+                        if let fromId = nodoAux["fromId"] as? String{
+                            message.fromId = fromId
+                        }
+                        if let timestamp = nodoAux["timestamp"] as? NSNumber{
+                            message.timestamp = timestamp
+                        }
+                        
+                        if (self.messages != nil){
+                            self.messages?.append(message)
+                        }
+                        else{
+                            self.messages = [message]
+                        }
+                        DispatchQueue.main.async {
+                            self.tableView.reloadData()
+                        }
+                    }
+                }
+            }
+        })
     }
     
     @objc func handleNewMessage(){
@@ -113,6 +164,20 @@ class MessagesController: UITableViewController {
         
     }
     
+    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return messages?.count ?? 0
+    }
+    
+    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        
+        let cell = UITableViewCell(style: .subtitle, reuseIdentifier: "cellId")
+        let message = messages?[indexPath.row]
+        
+        cell.textLabel?.text = message?.text
+        cell.detailTextLabel?.text = message?.idMessage
+        
+        return cell
+    }
     
     @objc func handleLogout(){
         
