@@ -173,8 +173,18 @@ class MessagesController: UITableViewController {
         let cell = UITableViewCell(style: .subtitle, reuseIdentifier: "cellId")
         let message = messages?[indexPath.row]
         
-        cell.textLabel?.text = message?.text
-        cell.detailTextLabel?.text = message?.idMessage
+        if let toId = message?.toId{
+            let ref = Database.database().reference().child("Users").child(toId)
+            ref.observeSingleEvent(of: .value) { (snapshot) in
+                if let dictionary = snapshot.value as? [String: Any]{
+                    cell.textLabel?.text = dictionary["name"] as? String
+                }
+                
+            }
+            
+        }
+        
+        cell.detailTextLabel?.text = message?.text
         
         return cell
     }

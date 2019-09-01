@@ -73,6 +73,13 @@
 			path = Model;
 			sourceTree = "<group>";
 		};
+		A9966031231C5FE600C643C1 /* View */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
 		A9E47EC6230BA5E400A292ED = {
 			isa = PBXGroup;
 			children = (
@@ -96,6 +103,7 @@
 			children = (
 				A91117EC23182FF200EDA3E4 /* Helpers */,
 				A93E38EE23124A930052BA7F /* Model */,
+				A9966031231C5FE600C643C1 /* View */,
 				A9E47EE4230BACCC00A292ED /* Controller */,
 				A9E47ED2230BA5E400A292ED /* AppDelegate.swift */,
 				A9E47ED6230BA5E400A292ED /* Main.storyboard */,
