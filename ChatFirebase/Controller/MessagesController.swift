@@ -13,6 +13,7 @@ import FirebaseAuth
 class MessagesController: UITableViewController {
     
     var messages: [Message]?
+    var messagesDictionary = [String: Message]()
     let cellId = "cellId"
     
     override func viewDidAppear(_ animated: Bool) {
@@ -61,12 +62,20 @@ class MessagesController: UITableViewController {
                             message.timestamp = timestamp
                         }
                         
-                        if (self.messages != nil){
-                            self.messages?.append(message)
+//                        if (self.messages != nil){
+//                            self.messages?.append(message)
+//                        }
+//                        else{
+//                            self.messages = [message]
+//                        }
+                        
+                        if let toId = message.toId{
+                            self.messagesDictionary[toId] = message
+                            
+                            self.messages = Array(self.messagesDictionary.values)
                         }
-                        else{
-                            self.messages = [message]
-                        }
+                        
+                        
                         DispatchQueue.main.async {
                             self.tableView.reloadData()
                         }
