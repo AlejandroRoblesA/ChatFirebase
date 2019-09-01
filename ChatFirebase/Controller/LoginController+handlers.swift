@@ -105,7 +105,8 @@ extension LoginController: UIImagePickerControllerDelegate, UINavigationControll
             
                 
                 let userData = User()
-                
+            
+            
                 if let name = values["name"] as? String{
                     userData.name = name
                 }

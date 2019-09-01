@@ -48,6 +48,7 @@ class MessagesController: UITableViewController {
             let userData = User()
                             
             userData.key = snapshot.key
+            
             if let name = dictionary["name"] as? String{
                 userData.name = name
             }

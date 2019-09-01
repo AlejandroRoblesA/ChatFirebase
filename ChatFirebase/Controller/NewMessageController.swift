@@ -36,8 +36,14 @@ class NewMessageController: UITableViewController {
                 if let nodoSnap = nodo as? DataSnapshot{
                     
                     if let nodoAux = nodoSnap.value as? [String: Any]{
+                        
                         let userData = User()
+                        
                         userData.key = nodoSnap.key
+                        
+                        userData.id = nodoSnap.key
+                        
+                        
                         if let name = nodoAux["name"] as? String{
                             userData.name = name
                         }
