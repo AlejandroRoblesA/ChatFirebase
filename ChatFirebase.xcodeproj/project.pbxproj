@@ -14,6 +14,7 @@
 		A93E38F023124AC10052BA7F /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = A93E38EF23124AC10052BA7F /* User.swift */; };
 		A991174B231AF3DB003D1BE5 /* ChatLogController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A991174A231AF3DB003D1BE5 /* ChatLogController.swift */; };
 		A99139EE23175BC300351C85 /* LoginController+handlers.swift in Sources */ = {isa = PBXBuildFile; fileRef = A99139ED23175BC300351C85 /* LoginController+handlers.swift */; };
+		A9966033231C607D00C643C1 /* UserCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9966032231C607D00C643C1 /* UserCell.swift */; };
 		A9A12B03231B567200462C61 /* Message.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9A12B02231B567200462C61 /* Message.swift */; };
 		A9E47ED3230BA5E400A292ED /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9E47ED2230BA5E400A292ED /* AppDelegate.swift */; };
 		A9E47ED5230BA5E400A292ED /* MessagesController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9E47ED4230BA5E400A292ED /* MessagesController.swift */; };
@@ -33,6 +34,7 @@
 		A93E38EF23124AC10052BA7F /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		A991174A231AF3DB003D1BE5 /* ChatLogController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatLogController.swift; sourceTree = "<group>"; };
 		A99139ED23175BC300351C85 /* LoginController+handlers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LoginController+handlers.swift"; sourceTree = "<group>"; };
+		A9966032231C607D00C643C1 /* UserCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserCell.swift; sourceTree = "<group>"; };
 		A9A12B02231B567200462C61 /* Message.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Message.swift; sourceTree = "<group>"; };
 		A9E47ECF230BA5E400A292ED /* ChatFirebase.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ChatFirebase.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A9E47ED2230BA5E400A292ED /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -76,6 +78,7 @@
 		A9966031231C5FE600C643C1 /* View */ = {
 			isa = PBXGroup;
 			children = (
+				A9966032231C607D00C643C1 /* UserCell.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -268,6 +271,7 @@
 				A9E47ED5230BA5E400A292ED /* MessagesController.swift in Sources */,
 				A93E38F023124AC10052BA7F /* User.swift in Sources */,
 				A9E47ED3230BA5E400A292ED /* AppDelegate.swift in Sources */,
+				A9966033231C607D00C643C1 /* UserCell.swift in Sources */,
 				A91117EE2318301D00EDA3E4 /* Extensions.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

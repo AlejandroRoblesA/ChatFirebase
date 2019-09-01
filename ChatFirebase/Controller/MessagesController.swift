@@ -13,6 +13,7 @@ import FirebaseAuth
 class MessagesController: UITableViewController {
     
     var messages: [Message]?
+    let cellId = "cellId"
     
     override func viewDidAppear(_ animated: Bool) {
         observeMessages()
@@ -27,6 +28,7 @@ class MessagesController: UITableViewController {
         
         checkIfUserIsLoggedIn()
         
+        tableView.register(UserCell.self, forCellReuseIdentifier: cellId)
     }
     
     func observeMessages(){
@@ -170,7 +172,8 @@ class MessagesController: UITableViewController {
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
-        let cell = UITableViewCell(style: .subtitle, reuseIdentifier: "cellId")
+        //let cell = UITableViewCell(style: .subtitle, reuseIdentifier: "cellId")
+        let cell = tableView.dequeueReusableCell(withIdentifier: cellId, for: indexPath) as! UserCell
         let message = messages?[indexPath.row]
         
         if let toId = message?.toId{
@@ -178,6 +181,10 @@ class MessagesController: UITableViewController {
             ref.observeSingleEvent(of: .value) { (snapshot) in
                 if let dictionary = snapshot.value as? [String: Any]{
                     cell.textLabel?.text = dictionary["name"] as? String
+                    
+                    if let profileImageUrl = dictionary["profileImageUrl"] as? String{
+                        cell.profileImageView.loadImageUsingCacheWithUrlString(urlString: profileImageUrl)
+                    }
                 }
                 
             }
@@ -187,6 +194,10 @@ class MessagesController: UITableViewController {
         cell.detailTextLabel?.text = message?.text
         
         return cell
+    }
+    
+    override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 72
     }
     
     @objc func handleLogout(){
