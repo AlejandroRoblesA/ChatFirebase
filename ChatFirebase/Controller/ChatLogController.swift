@@ -88,7 +88,24 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate{
                       "fromId":    fromId,
                       "timestamp": timestamp] as [String : Any]
         
-        childRef.updateChildValues(values)
+        //childRef.updateChildValues(values)
+        childRef.updateChildValues(values) { (error, ref) in
+            if (error != nil){
+                print(error as Any)
+                return
+            }
+            
+            let userMessagesRef = Database.database().reference().child("user-messages").child(fromId)
+            
+            let messageId = childRef.key
+            
+            let dictionary = [messageId: 1] as? [String: Any]
+            
+            
+            userMessagesRef.updateChildValues(dictionary!)
+            
+            
+        }
         
     }
     

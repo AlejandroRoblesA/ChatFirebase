@@ -17,7 +17,8 @@ class MessagesController: UITableViewController {
     let cellId = "cellId"
     
     override func viewDidAppear(_ animated: Bool) {
-        observeMessages()
+        //observeMessages()
+        observeUserMessages()
     }
     
     override func viewDidLoad() {
@@ -34,7 +35,7 @@ class MessagesController: UITableViewController {
     
     func observeMessages(){
         
-        messages?.removeAll()
+        
         
         let ref = Database.database().reference().child("messages")
         
@@ -42,13 +43,9 @@ class MessagesController: UITableViewController {
             
             for nodo in snapshot.children{
                 if let nodoSnap = nodo as? DataSnapshot{
-                    
                     if let nodoAux = nodoSnap.value as? [String: Any]{
-                        
                         let message = Message()
-                        
                         message.idMessage = nodoSnap.key
-                        
                         if let text = nodoAux["text"] as? String{
                             message.text = text
                         }
@@ -61,29 +58,13 @@ class MessagesController: UITableViewController {
                         if let timestamp = nodoAux["timestamp"] as? NSNumber{
                             message.timestamp = timestamp
                         }
-                        
-//                        if (self.messages != nil){
-//                            self.messages?.append(message)
-//                        }
-//                        else{
-//                            self.messages = [message]
-//                        }
-                        
                         if let toId = message.toId{
                             self.messagesDictionary[toId] = message
-                            
                             self.messages = Array(self.messagesDictionary.values)
-                            
-//                            self.messages?.sorted(by: { (message1, message2) -> Bool in
-//                                return message1.timestamp!.intValue > message2.timestamp!.intValue
-//                            })
-                            
                             self.messages?.sort(by: { (message1, message2) -> Bool in
                                 return message1.timestamp!.intValue > message2.timestamp!.intValue
                             })
                         }
-                        
-                        
                         DispatchQueue.main.async {
                             self.tableView.reloadData()
                         }
@@ -92,6 +73,48 @@ class MessagesController: UITableViewController {
             }
         })
     }
+    
+    func observeUserMessages(){
+        messages?.removeAll()
+        guard let uid = Auth.auth().currentUser?.uid else { return }
+        let ref = Database.database().reference().child("user-messages").child(uid)
+        
+        ref.observe(.childAdded, with: { (snapshot) in
+            let nodo = snapshot.key
+            let messagesReferences = Database.database().reference().child("messages").child(nodo)
+            messagesReferences.observeSingleEvent(of: .value, with: { (snapshot) in
+                
+                if let dictionary = snapshot.value as? [String:Any]{
+                    let message = Message()
+                    message.idMessage = snapshot.key
+                    if let text = dictionary["text"] as? String{
+                        message.text = text
+                    }
+                    if let toId = dictionary["toId"] as? String{
+                        message.toId = toId
+                    }
+                    if let fromId = dictionary["fromId"] as? String{
+                        message.fromId = fromId
+                    }
+                    if let timestamp = dictionary["timestamp"] as? NSNumber{
+                        message.timestamp = timestamp
+                    }
+                    if let toId = message.toId{
+                        self.messagesDictionary[toId] = message
+                        self.messages = Array(self.messagesDictionary.values)
+                        self.messages?.sort(by: { (message1, message2) -> Bool in
+                            return message1.timestamp!.intValue > message2.timestamp!.intValue
+                        })
+                    }
+                    DispatchQueue.main.async {
+                        self.tableView.reloadData()
+                    }
+                }
+            })
+            
+        }, withCancel: nil)
+    }
+    
     
     @objc func handleNewMessage(){
         let newMessageController = NewMessageController()
