@@ -15,6 +15,8 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
     var user: User?{
         didSet{
             navigationItem.title = user?.name
+            
+            observeMessages()
         }
     }
     
@@ -28,6 +30,8 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
     
     let cellId = "cellId"
     
+    var messages = [Message]()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -38,7 +42,7 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
     }
     
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 5
+        return messages.count
     }
     
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -122,10 +126,46 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
             let recipientUserMessageRef = Database.database().reference().child("user-messages").child(toId)
             
             recipientUserMessageRef.updateChildValues(dictionary!)
-            
-            
         }
+    }
+    
+    func observeMessages(){
         
+        guard let uid = Auth.auth().currentUser?.uid else { return }
+        
+        let userMessagesRef = Database.database().reference().child("user-messages").child(uid)
+        userMessagesRef.observe(.childAdded, with: { (snapshot) in
+            
+            let messageId = snapshot.key
+            
+            let messageRef = Database.database().reference().child("messages").child(messageId)
+            
+            messageRef.observe(.value, with: { (snapshot2) in
+                
+                guard let dictionary = snapshot2.value as? [String: Any] else { return }
+                
+                let message = Message()
+                
+                message.idMessage = snapshot2.key
+                if let text = dictionary["text"] as? String{
+                    message.text = text
+                }
+                if let toId = dictionary["toId"] as? String{
+                    message.toId = toId
+                }
+                if let fromId = dictionary["fromId"] as? String{
+                    message.fromId = fromId
+                }
+                if let timestamp = dictionary["timestamp"] as? NSNumber{
+                    message.timestamp = timestamp
+                }
+                self.messages.append(message)
+                self.collectionView.reloadData()
+                
+            }, withCancel: nil)
+            
+            
+        }, withCancel: nil)
     }
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
