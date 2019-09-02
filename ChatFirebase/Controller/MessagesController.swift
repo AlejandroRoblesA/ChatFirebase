@@ -230,6 +230,38 @@ class MessagesController: UITableViewController {
         return 72
     }
     
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        
+        let message = messages?[indexPath.row]
+        
+        guard let chatPartnerId = message?.chatPartnerId() else { return }
+        
+        let ref = Database.database().reference().child("Users").child(chatPartnerId)
+        
+        ref.observeSingleEvent(of: .value) { (snapshot) in
+            print(snapshot)
+            
+            guard let dictionary = snapshot.value as? [String: Any] else { return }
+            
+            let user = User()
+            
+            user.key = snapshot.key
+            user.id = chatPartnerId
+            if let name = dictionary["name"] as? String{
+                user.name = name
+            }
+            if let email = dictionary["email"] as? String{
+                user.email = email
+            }
+            if let imageURL = dictionary["profileImageUrl"] as? String{
+                user.profileImageUrl = imageURL
+            }
+            self.showChatControllerForUser(user: user)
+        }
+        
+        //
+    }
+    
     @objc func handleLogout(){
         
         do {
