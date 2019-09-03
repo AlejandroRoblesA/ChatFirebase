@@ -138,6 +138,8 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
                 return
             }
             
+            self.inputTextField.text = nil
+            
             let userMessagesRef = Database.database().reference().child("user-messages").child(fromId)
             
             let messageId = childRef.key
