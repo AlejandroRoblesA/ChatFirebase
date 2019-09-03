@@ -35,8 +35,9 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        collectionView.alwaysBounceVertical = true
         collectionView.backgroundColor = .white
-        collectionView.register(UICollectionViewCell.self, forCellWithReuseIdentifier: cellId)
+        collectionView.register(ChatMessageCell.self, forCellWithReuseIdentifier: cellId)
         
         setupInputComponents()
     }
@@ -46,17 +47,22 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
     }
     
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellId, for: indexPath)
-        cell.backgroundColor = .blue
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellId, for: indexPath) as! ChatMessageCell
+        
+        let message = messages[indexPath.item]
+        cell.textView.text = message.text
+        
+        
         return cell
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return CGSize(width: view.frame.height, height: 80)
+        return CGSize(width: view.frame.width, height: 80)
     }
     
     func setupInputComponents(){
         let containerView = UIView()
+        containerView.backgroundColor = .white
         containerView.translatesAutoresizingMaskIntoConstraints = false
         
         view.addSubview(containerView)
@@ -159,8 +165,13 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
                 if let timestamp = dictionary["timestamp"] as? NSNumber{
                     message.timestamp = timestamp
                 }
-                self.messages.append(message)
-                self.collectionView.reloadData()
+                
+                if message.chatPartnerId() == self.user?.id{
+                    self.messages.append(message)
+                    self.collectionView.reloadData()
+                }
+                
+                
                 
             }, withCancel: nil)
             
