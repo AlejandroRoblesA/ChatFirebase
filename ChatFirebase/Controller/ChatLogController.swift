@@ -54,6 +54,14 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
         let message = messages[indexPath.item]
         cell.textView.text = message.text
         
+        if message.fromId == Auth.auth().currentUser?.uid{
+            //blue view
+            cell.bubbleView.backgroundColor = ChatMessageCell.blueColor
+        }
+        else{
+            cell.bubbleView.backgroundColor = UIColor(r: 240, g: 240, b: 240)
+        }
+        
         cell.bubbleWidthAnchor?.constant = estimateFrameForText(text: message.text!).width + 32
         
         return cell
