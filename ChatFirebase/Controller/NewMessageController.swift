@@ -17,6 +17,8 @@ class NewMessageController: UITableViewController {
     
     var messagesController: MessagesController?
     
+    var timer: Timer?
+    
     override func viewDidAppear(_ animated: Bool) {
         fetchUser()
     }
@@ -62,8 +64,15 @@ class NewMessageController: UITableViewController {
                     }
                 }
             }
-            self.tableView.reloadData()
+            self.timer?.invalidate()
+            self.timer = Timer.scheduledTimer(timeInterval: 0.1, target: self, selector: #selector(self.handleReloadTable), userInfo: nil, repeats: false)
         })
+    }
+    
+    @objc func handleReloadTable(){
+        DispatchQueue.main.async {
+            self.tableView.reloadData()
+        }
     }
     
     @objc func handleCancel(){
