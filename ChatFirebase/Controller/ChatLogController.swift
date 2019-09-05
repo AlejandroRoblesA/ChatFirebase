@@ -62,6 +62,11 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
     }
     
     private func setupCell(cell: ChatMessageCell, message: Message){
+        
+        if let profileImageUrl = self.user?.profileImageUrl{
+            cell.profileImageView.loadImageUsingCacheWithUrlString(urlString: profileImageUrl)
+        }
+        
         if message.fromId == Auth.auth().currentUser?.uid{
             cell.bubbleView.backgroundColor = ChatMessageCell.blueColor
             cell.textView.textColor = .white
