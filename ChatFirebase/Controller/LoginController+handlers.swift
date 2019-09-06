@@ -82,8 +82,6 @@ extension LoginController: UIImagePickerControllerDelegate, UINavigationControll
                                 self.registerUserIntoDatabaseWithUID(uid: uid, values: values)
                             }
                         })
-                        
-                        
                     })
                 }
             }

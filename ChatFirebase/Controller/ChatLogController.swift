@@ -32,6 +32,8 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
     
     var messages = [Message]()
     
+    var containerViewButtomAnchor: NSLayoutConstraint?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -42,6 +44,21 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
         collectionView.register(ChatMessageCell.self, forCellWithReuseIdentifier: cellId)
         
         setupInputComponents()
+        
+        setupKeyboardObservers()
+    }
+    
+    func setupKeyboardObservers(){
+        NotificationCenter.default.addObserver(self, selector: #selector(handleKeyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
+    }
+    
+    @objc func handleKeyboardWillShow(notification: NSNotification){
+        guard let info = notification.userInfo else { return }
+        guard let value: NSValue = info[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue else { return }
+        let keyboardFrame = value.cgRectValue
+        
+        containerViewButtomAnchor?.constant = -keyboardFrame.height
+        
     }
     
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
@@ -114,7 +131,9 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
         view.addSubview(containerView)
         
         containerView.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
-        containerView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
+        
+        containerViewButtomAnchor = containerView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+        containerViewButtomAnchor?.isActive = true
         containerView.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
         containerView.heightAnchor.constraint(equalToConstant: 50).isActive = true
         
