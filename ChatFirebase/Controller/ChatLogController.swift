@@ -50,6 +50,7 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
     
     func setupKeyboardObservers(){
         NotificationCenter.default.addObserver(self, selector: #selector(handleKeyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(handleKeyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
     }
     
     @objc func handleKeyboardWillShow(notification: NSNotification){
@@ -59,6 +60,10 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
         
         containerViewButtomAnchor?.constant = -keyboardFrame.height
         
+    }
+    
+    @objc func handleKeyboardWillHide(notification: NSNotification){
+        containerViewButtomAnchor?.constant = 0
     }
     
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
