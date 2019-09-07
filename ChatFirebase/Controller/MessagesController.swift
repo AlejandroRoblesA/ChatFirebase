@@ -46,39 +46,49 @@ class MessagesController: UITableViewController {
             messagesReferences.observe(.childAdded, with: { (snapshot2) in
                 let messageId = snapshot2.key
                 
-                Database.database().reference().child("messages").child(messageId).observeSingleEvent(of: .value, with: { (snapshot3) in
-                    if let dictionary = snapshot3.value as? [String:Any]{
-                        let message = Message()
-                        message.idMessage = snapshot3.key
-                        if let text = dictionary["text"] as? String{
-                            message.text = text
-                        }
-                        if let toId = dictionary["toId"] as? String{
-                            message.toId = toId
-                        }
-                        if let fromId = dictionary["fromId"] as? String{
-                            message.fromId = fromId
-                        }
-                        if let timestamp = dictionary["timestamp"] as? NSNumber{
-                            message.timestamp = timestamp
-                        }
-                        if let chatPartner = message.chatPartnerId(){
-                            self.messagesDictionary[chatPartner] = message
-                            self.messages = Array(self.messagesDictionary.values)
-                            self.messages?.sort(by: { (message1, message2) -> Bool in
-                                return message1.timestamp!.intValue > message2.timestamp!.intValue
-                            })
-                        }
-                        
-                        self.timer?.invalidate()
-                        self.timer = Timer.scheduledTimer(timeInterval: 0.1, target: self, selector: #selector(self.handleReloadTable), userInfo: nil, repeats: false)
-                    }
-                })
+                self.fetchMessageWithMessageId(messageId: messageId)
+                
             }, withCancel: nil)        
         }, withCancel: nil)
     }
     
+    private func fetchMessageWithMessageId(messageId: String){
+        Database.database().reference().child("messages").child(messageId).observeSingleEvent(of: .value, with: { (snapshot3) in
+            if let dictionary = snapshot3.value as? [String:Any]{
+                let message = Message()
+                message.idMessage = snapshot3.key
+                if let text = dictionary["text"] as? String{
+                    message.text = text
+                }
+                if let toId = dictionary["toId"] as? String{
+                    message.toId = toId
+                }
+                if let fromId = dictionary["fromId"] as? String{
+                    message.fromId = fromId
+                }
+                if let timestamp = dictionary["timestamp"] as? NSNumber{
+                    message.timestamp = timestamp
+                }
+                if let chatPartner = message.chatPartnerId(){
+                    self.messagesDictionary[chatPartner] = message
+                    
+                }
+                self.attemptReloadOfTable()
+            }
+        })
+    }
+    
+    private func attemptReloadOfTable(){
+        self.timer?.invalidate()
+        self.timer = Timer.scheduledTimer(timeInterval: 0.1, target: self, selector: #selector(self.handleReloadTable), userInfo: nil, repeats: false)
+    }
+    
     @objc func handleReloadTable(){
+        self.messages = Array(self.messagesDictionary.values)
+        self.messages?.sort(by: { (message1, message2) -> Bool in
+            return message1.timestamp!.intValue > message2.timestamp!.intValue
+        })
+        
         DispatchQueue.main.async {
             self.tableView.reloadData()
         }
