@@ -266,14 +266,14 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
             
             self.inputTextField.text = nil
             
-            let userMessagesRef = Database.database().reference().child("user-messages").child(fromId)
+            let userMessagesRef = Database.database().reference().child("user-messages").child(fromId).child(toId)
             
             let messageId = childRef.key
             
             let dictionary = [messageId: 1] as? [String: Any]
             userMessagesRef.updateChildValues(dictionary!)
             
-            let recipientUserMessageRef = Database.database().reference().child("user-messages").child(toId)
+            let recipientUserMessageRef = Database.database().reference().child("user-messages").child(toId).child(fromId)
             
             recipientUserMessageRef.updateChildValues(dictionary!)
         }
