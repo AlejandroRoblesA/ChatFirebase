@@ -34,48 +34,7 @@ class MessagesController: UITableViewController {
         
         tableView.register(UserCell.self, forCellReuseIdentifier: cellId)
     }
-    
-//    func observeMessages(){
-//
-//
-//
-//        let ref = Database.database().reference().child("messages")
-//
-//        ref.observeSingleEvent(of: .value, with: { (snapshot) in
-//
-//            for nodo in snapshot.children{
-//                if let nodoSnap = nodo as? DataSnapshot{
-//                    if let nodoAux = nodoSnap.value as? [String: Any]{
-//                        let message = Message()
-//                        message.idMessage = nodoSnap.key
-//                        if let text = nodoAux["text"] as? String{
-//                            message.text = text
-//                        }
-//                        if let toId = nodoAux["toId"] as? String{
-//                            message.toId = toId
-//                        }
-//                        if let fromId = nodoAux["fromId"] as? String{
-//                            message.fromId = fromId
-//                        }
-//                        if let timestamp = nodoAux["timestamp"] as? NSNumber{
-//                            message.timestamp = timestamp
-//                        }
-//                        if let toId = message.toId{
-//                            self.messagesDictionary[toId] = message
-//                            self.messages = Array(self.messagesDictionary.values)
-//                            self.messages?.sort(by: { (message1, message2) -> Bool in
-//                                return message1.timestamp!.intValue > message2.timestamp!.intValue
-//                            })
-//                        }
-//                        DispatchQueue.main.async {
-//                            self.tableView.reloadData()
-//                        }
-//                    }
-//                }
-//            }
-//        })
-//    }
-    
+
     func observeUserMessages(){
         messages?.removeAll()
         guard let uid = Auth.auth().currentUser?.uid else { return }
@@ -83,37 +42,39 @@ class MessagesController: UITableViewController {
         
         ref.observe(.childAdded, with: { (snapshot) in
             let nodo = snapshot.key
-            let messagesReferences = Database.database().reference().child("messages").child(nodo)
-            messagesReferences.observeSingleEvent(of: .value, with: { (snapshot) in
+            let messagesReferences = Database.database().reference().child("user-messages").child(uid).child(nodo)
+            messagesReferences.observe(.childAdded, with: { (snapshot2) in
+                let messageId = snapshot2.key
                 
-                if let dictionary = snapshot.value as? [String:Any]{
-                    let message = Message()
-                    message.idMessage = snapshot.key
-                    if let text = dictionary["text"] as? String{
-                        message.text = text
+                Database.database().reference().child("messages").child(messageId).observeSingleEvent(of: .value, with: { (snapshot3) in
+                    if let dictionary = snapshot3.value as? [String:Any]{
+                        let message = Message()
+                        message.idMessage = snapshot3.key
+                        if let text = dictionary["text"] as? String{
+                            message.text = text
+                        }
+                        if let toId = dictionary["toId"] as? String{
+                            message.toId = toId
+                        }
+                        if let fromId = dictionary["fromId"] as? String{
+                            message.fromId = fromId
+                        }
+                        if let timestamp = dictionary["timestamp"] as? NSNumber{
+                            message.timestamp = timestamp
+                        }
+                        if let chatPartner = message.chatPartnerId(){
+                            self.messagesDictionary[chatPartner] = message
+                            self.messages = Array(self.messagesDictionary.values)
+                            self.messages?.sort(by: { (message1, message2) -> Bool in
+                                return message1.timestamp!.intValue > message2.timestamp!.intValue
+                            })
+                        }
+                        
+                        self.timer?.invalidate()
+                        self.timer = Timer.scheduledTimer(timeInterval: 0.1, target: self, selector: #selector(self.handleReloadTable), userInfo: nil, repeats: false)
                     }
-                    if let toId = dictionary["toId"] as? String{
-                        message.toId = toId
-                    }
-                    if let fromId = dictionary["fromId"] as? String{
-                        message.fromId = fromId
-                    }
-                    if let timestamp = dictionary["timestamp"] as? NSNumber{
-                        message.timestamp = timestamp
-                    }
-                    if let chatPartner = message.chatPartnerId(){
-                        self.messagesDictionary[chatPartner] = message
-                        self.messages = Array(self.messagesDictionary.values)
-                        self.messages?.sort(by: { (message1, message2) -> Bool in
-                            return message1.timestamp!.intValue > message2.timestamp!.intValue
-                        })
-                    }
-                    
-                    self.timer?.invalidate()
-                    self.timer = Timer.scheduledTimer(timeInterval: 0.1, target: self, selector: #selector(self.handleReloadTable), userInfo: nil, repeats: false)
-                }
-            })
-            
+                })
+            }, withCancel: nil)        
         }, withCancel: nil)
     }
     
