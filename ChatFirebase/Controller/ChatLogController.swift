@@ -9,13 +9,13 @@
 import UIKit
 import FirebaseDatabase
 import FirebaseAuth
+import FirebaseStorage
 
 class ChatLogController: UICollectionViewController, UITextFieldDelegate, UICollectionViewDelegateFlowLayout, UIImagePickerControllerDelegate, UINavigationControllerDelegate{
     
     var user: User?{
         didSet{
             navigationItem.title = user?.name
-            
             observeMessages()
         }
     }
@@ -38,16 +38,11 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
         super.viewDidLoad()
         
         collectionView.contentInset = UIEdgeInsets(top: 8, left: 0, bottom: 8, right: 0)
-        //collectionView.scrollIndicatorInsets = UIEdgeInsets(top: 0, left: 0, bottom: 58, right: 0)
         collectionView.alwaysBounceVertical = true
         collectionView.backgroundColor = .white
         collectionView.register(ChatMessageCell.self, forCellWithReuseIdentifier: cellId)
         
         collectionView.keyboardDismissMode = .interactive
-        
-//        setupInputComponents()
-//
-//        setupKeyboardObservers()
     }
     
     lazy var inputContainerView: UIView = {
@@ -124,7 +119,28 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
     }
     
     private func uploadToFirebaseStorageUsingImage(image: UIImage){
-        print("upload to firebase")
+        let imageName = NSUUID().uuidString
+        let ref = Storage.storage().reference().child("message_images").child(imageName)
+        
+        if let uploadData = image.jpegData(compressionQuality: 0.2){
+            ref.putData(uploadData, metadata: nil) { (metadata, error) in
+                if (error !=  nil){
+                    return
+                }
+                
+                ref.downloadURL(completion: { (url, error) in
+                    if (error != nil){
+                        print(error as Any)
+                        return
+                    }
+                    print("❗️❗️❗️", url!)
+//                    else{
+//                        let imageUrl = url?.absoluteString
+//                        self.sendMessagesWithUrl(imageUrl: imageUrl!)
+//                    }
+                })
+            }
+        }
     }
     
     func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
@@ -244,51 +260,6 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
         return NSString(string: text).boundingRect(with: size, options: options, attributes: [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 16)], context: nil)
     }
     
-//    func setupInputComponents(){
-//        let containerView = UIView()
-//        containerView.backgroundColor = .white
-//        containerView.translatesAutoresizingMaskIntoConstraints = false
-//
-//        view.addSubview(containerView)
-//
-//        containerView.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
-//
-//        containerViewButtomAnchor = containerView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
-//        containerViewButtomAnchor?.isActive = true
-//        containerView.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
-//        containerView.heightAnchor.constraint(equalToConstant: 50).isActive = true
-//
-//        let sendButton = UIButton(type: .system)
-//        sendButton.setTitle("Send", for: .normal)
-//        sendButton.translatesAutoresizingMaskIntoConstraints = false
-//        sendButton.addTarget(self, action: #selector(handleSend), for: .touchUpInside)
-//        containerView.addSubview(sendButton)
-//
-//        sendButton.rightAnchor.constraint(equalTo: containerView.rightAnchor).isActive = true
-//        sendButton.centerYAnchor.constraint(equalTo: containerView.centerYAnchor).isActive = true
-//        sendButton.widthAnchor.constraint(equalToConstant: 80).isActive = true
-//        sendButton.heightAnchor.constraint(equalTo: containerView.heightAnchor).isActive = true
-//
-//        containerView.addSubview(inputTextField)
-//
-//        inputTextField.leftAnchor.constraint(equalTo: containerView.leftAnchor, constant: 8).isActive = true
-//        inputTextField.centerYAnchor.constraint(equalTo: containerView.centerYAnchor).isActive = true
-//        inputTextField.rightAnchor.constraint(equalTo: sendButton.leftAnchor).isActive = true
-//        inputTextField.heightAnchor.constraint(equalTo: containerView.heightAnchor).isActive = true
-//
-//
-//        let separatorLineView = UIView()
-//        separatorLineView.backgroundColor = UIColor(r: 220, g: 220, b: 220)
-//        separatorLineView.translatesAutoresizingMaskIntoConstraints = false
-//        containerView.addSubview(separatorLineView)
-//
-//        separatorLineView.leftAnchor.constraint(equalTo: containerView.leftAnchor).isActive = true
-//        separatorLineView.topAnchor.constraint(equalTo: containerView.topAnchor).isActive = true
-//        separatorLineView.widthAnchor.constraint(equalTo: containerView.widthAnchor).isActive = true
-//        separatorLineView.heightAnchor.constraint(equalToConstant: 1).isActive = true
-//
-//    }
-    
     @objc func handleSend(){
         
         let ref = Database.database().reference().child("messages")
@@ -301,7 +272,6 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
                       "fromId":    fromId,
                       "timestamp": timestamp] as [String : Any]
         
-        //childRef.updateChildValues(values)
         childRef.updateChildValues(values) { (error, ref) in
             if (error != nil){
                 print(error as Any)
@@ -355,14 +325,10 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
                     message.timestamp = timestamp
                 }
                 
-                //if message.chatPartnerId() == self.user?.id{
-                    self.messages.append(message)
-                    self.collectionView.reloadData()
-                //}
+                self.messages.append(message)
+                self.collectionView.reloadData()
                 
             }, withCancel: nil)
-            
-            
         }, withCancel: nil)
     }
     
@@ -370,5 +336,4 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
         handleSend()
         return true
     }
-    
 }
