@@ -107,7 +107,24 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
     }
     
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
-        print("Image selected")
+        var selectedImageFromPicker: UIImage?
+        
+        if let originalImage = info[.originalImage] as? UIImage  {
+            selectedImageFromPicker = originalImage
+        }
+        else if let editedImage = info[.editedImage] as? UIImage {
+            selectedImageFromPicker = editedImage
+        }
+        
+        if let selectedImage = selectedImageFromPicker{
+            uploadToFirebaseStorageUsingImage(image: selectedImage)
+        }
+        
+        dismiss(animated: true, completion: nil)
+    }
+    
+    private func uploadToFirebaseStorageUsingImage(image: UIImage){
+        print("upload to firebase")
     }
     
     func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
