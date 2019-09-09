@@ -37,7 +37,7 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        collectionView.contentInset = UIEdgeInsets(top: 8, left: 0, bottom: 8, right: 0)
+        collectionView.contentInset = UIEdgeInsets(top: 8, left: 0, bottom: 10, right: 0)
         collectionView.alwaysBounceVertical = true
         collectionView.backgroundColor = .white
         collectionView.register(ChatMessageCell.self, forCellWithReuseIdentifier: cellId)
@@ -365,6 +365,8 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
                 
                 self.messages.append(message)
                 self.collectionView.reloadData()
+                let indexPath = IndexPath(item: self.messages.count - 1, section: 0)
+                self.collectionView.scrollToItem(at: indexPath, at: .bottom, animated: true)
                 
             }, withCancel: nil)
         }, withCancel: nil)
