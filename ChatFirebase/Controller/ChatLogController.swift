@@ -130,38 +130,25 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
                 
                 ref.downloadURL(completion: { (url, error) in
                     if let imageUrl = url?.absoluteString{
-                        self.sendMessageWithImageUrl(imageUrl: imageUrl)
+                        self.sendMessageWithImageUrl(imageUrl: imageUrl, image: image)
                     }
                 })
-                
-//                ref.downloadURL(completion: { (url, error) in
-//                    if (error != nil){
-//                        print(error as Any)
-//                        return
-//                    }
-//
-//                    if let imageUrl = url?.absoluteString{
-//                        self.sendMessageWithImageUrl(imageUrl: imageUrl)
-//                    }
-////                    else{
-////                        let imageUrl = url?.absoluteString
-////
-////                    }
-              //  })
             }
         }
     }
     
-    private func sendMessageWithImageUrl(imageUrl: String){
+    private func sendMessageWithImageUrl(imageUrl: String, image: UIImage){
         let ref = Database.database().reference().child("messages")
         let childRef = ref.childByAutoId()
         let toId = user!.id!
         let fromId = Auth.auth().currentUser!.uid
         let timestamp: NSNumber = NSNumber(value: Int(NSDate().timeIntervalSince1970))
-        let values = ["imageUrl":  imageUrl,
-                      "toId":      toId,
-                      "fromId":    fromId,
-                      "timestamp": timestamp] as [String : Any]
+        let values = ["toId"       : toId,
+                      "fromId"     : fromId,
+                      "timestamp"  : timestamp,
+                      "imageUrl"   : imageUrl,
+                      "imageWidth" : image.size.width,
+                      "imageHeight": image.size.height] as [String : Any]
         
         childRef.updateChildValues(values) { (error, ref) in
             if (error != nil){
@@ -251,6 +238,9 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
         if let text = message.text{
             cell.bubbleWidthAnchor?.constant = estimateFrameForText(text: text).width + 32
         }
+        else if (message.imageUrl != nil){
+            cell.bubbleWidthAnchor?.constant = 200
+        }
         return cell
     }
     
@@ -293,8 +283,16 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         var height: CGFloat = 80
         
-        if let text = messages[indexPath.row].text{
+        let message = messages[indexPath.item]
+        if let text = message.text{
             height = estimateFrameForText(text: text).height + 20
+        }
+        else if let imageWidth = message.imageWidth?.floatValue,
+                let imageHeight = message.imageHeight?.floatValue{
+            
+            //h1 / w1 = h2 / w2
+            //h1 = h2 / w2 * w1
+            height = CGFloat(imageHeight / imageWidth * 200)
         }
         
         let width = UIScreen.main.bounds.width
@@ -374,8 +372,14 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
                 if let timestamp = dictionary["timestamp"] as? NSNumber{
                     message.timestamp = timestamp
                 }
-                if let image = dictionary["imageUrl"] as? String{
-                    message.imageUrl = image
+                if let imageUrl = dictionary["imageUrl"] as? String{
+                    message.imageUrl = imageUrl
+                }
+                if let imageWidth = dictionary["imageWidth"] as? NSNumber{
+                    message.imageWidth = imageWidth
+                }
+                if let imageHeight = dictionary["imageHeight"] as? NSNumber{
+                    message.imageHeight = imageHeight
                 }
                 
                 self.messages.append(message)
