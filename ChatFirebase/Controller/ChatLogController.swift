@@ -129,17 +129,58 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
                 }
                 
                 ref.downloadURL(completion: { (url, error) in
-                    if (error != nil){
-                        print(error as Any)
-                        return
+                    if let imageUrl = url?.absoluteString{
+                        self.sendMessageWithImageUrl(imageUrl: imageUrl)
                     }
-                    print("❗️❗️❗️", url!)
-//                    else{
-//                        let imageUrl = url?.absoluteString
-//                        self.sendMessagesWithUrl(imageUrl: imageUrl!)
-//                    }
                 })
+                
+//                ref.downloadURL(completion: { (url, error) in
+//                    if (error != nil){
+//                        print(error as Any)
+//                        return
+//                    }
+//
+//                    if let imageUrl = url?.absoluteString{
+//                        self.sendMessageWithImageUrl(imageUrl: imageUrl)
+//                    }
+////                    else{
+////                        let imageUrl = url?.absoluteString
+////
+////                    }
+              //  })
             }
+        }
+    }
+    
+    private func sendMessageWithImageUrl(imageUrl: String){
+        let ref = Database.database().reference().child("messages")
+        let childRef = ref.childByAutoId()
+        let toId = user!.id!
+        let fromId = Auth.auth().currentUser!.uid
+        let timestamp: NSNumber = NSNumber(value: Int(NSDate().timeIntervalSince1970))
+        let values = ["imageUrl":  imageUrl,
+                      "toId":      toId,
+                      "fromId":    fromId,
+                      "timestamp": timestamp] as [String : Any]
+        
+        childRef.updateChildValues(values) { (error, ref) in
+            if (error != nil){
+                print(error as Any)
+                return
+            }
+            
+            self.inputTextField.text = nil
+            
+            let userMessagesRef = Database.database().reference().child("user-messages").child(fromId).child(toId)
+            
+            let messageId = childRef.key
+            
+            let dictionary = [messageId: 1] as? [String: Any]
+            userMessagesRef.updateChildValues(dictionary!)
+            
+            let recipientUserMessageRef = Database.database().reference().child("user-messages").child(toId).child(fromId)
+            
+            recipientUserMessageRef.updateChildValues(dictionary!)
         }
     }
     
@@ -207,9 +248,9 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
         cell.textView.text = message.text
         
         setupCell(cell: cell, message: message)
-        
-        cell.bubbleWidthAnchor?.constant = estimateFrameForText(text: message.text!).width + 32
-        
+        if let text = message.text{
+            cell.bubbleWidthAnchor?.constant = estimateFrameForText(text: text).width + 32
+        }
         return cell
     }
     
@@ -233,6 +274,15 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
             cell.bubbleViewRightAnchor?.isActive = false
             cell.bubbleViewLeftAnchor?.isActive = true
             cell.profileImageView.isHidden = false
+        }
+        
+        if let messageImageUrl = message.imageUrl{
+            cell.messageImageView.loadImageUsingCacheWithUrlString(urlString: messageImageUrl)
+            cell.messageImageView.isHidden = false
+            cell.bubbleView.backgroundColor = .clear
+        }
+        else{
+            cell.messageImageView.isHidden = true
         }
     }
     
@@ -323,6 +373,9 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
                 }
                 if let timestamp = dictionary["timestamp"] as? NSNumber{
                     message.timestamp = timestamp
+                }
+                if let image = dictionary["imageUrl"] as? String{
+                    message.imageUrl = image
                 }
                 
                 self.messages.append(message)
