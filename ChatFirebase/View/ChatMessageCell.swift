@@ -17,6 +17,7 @@ class ChatMessageCell: UICollectionViewCell {
         textView.translatesAutoresizingMaskIntoConstraints = false
         textView.backgroundColor = .clear
         textView.textColor = .white
+        textView.isEditable = false
         return textView
     }()
     
