@@ -137,40 +137,6 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
         }
     }
     
-    private func sendMessageWithImageUrl(imageUrl: String, image: UIImage){
-        let ref = Database.database().reference().child("messages")
-        let childRef = ref.childByAutoId()
-        let toId = user!.id!
-        let fromId = Auth.auth().currentUser!.uid
-        let timestamp: NSNumber = NSNumber(value: Int(NSDate().timeIntervalSince1970))
-        let values = ["toId"       : toId,
-                      "fromId"     : fromId,
-                      "timestamp"  : timestamp,
-                      "imageUrl"   : imageUrl,
-                      "imageWidth" : image.size.width,
-                      "imageHeight": image.size.height] as [String : Any]
-        
-        childRef.updateChildValues(values) { (error, ref) in
-            if (error != nil){
-                print(error as Any)
-                return
-            }
-            
-            self.inputTextField.text = nil
-            
-            let userMessagesRef = Database.database().reference().child("user-messages").child(fromId).child(toId)
-            
-            let messageId = childRef.key
-            
-            let dictionary = [messageId: 1] as? [String: Any]
-            userMessagesRef.updateChildValues(dictionary!)
-            
-            let recipientUserMessageRef = Database.database().reference().child("user-messages").child(toId).child(fromId)
-            
-            recipientUserMessageRef.updateChildValues(dictionary!)
-        }
-    }
-    
     func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
         dismiss(animated: true, completion: nil)
     }
@@ -310,15 +276,30 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
     
     @objc func handleSend(){
         
+        let properties = ["text": inputTextField.text!] as [String : Any]
+        sendMessageWithProperties(properties: properties)
+    }
+    
+    private func sendMessageWithImageUrl(imageUrl: String, image: UIImage){
+        
+        let properties = ["imageUrl"   : imageUrl,
+                          "imageWidth" : image.size.width,
+                          "imageHeight": image.size.height] as [String : Any]
+        sendMessageWithProperties(properties: properties)
+    }
+    
+    private func sendMessageWithProperties(properties: [String: Any]){
         let ref = Database.database().reference().child("messages")
         let childRef = ref.childByAutoId()
         let toId = user!.id!
         let fromId = Auth.auth().currentUser!.uid
         let timestamp: NSNumber = NSNumber(value: Int(NSDate().timeIntervalSince1970))
-        let values = ["text":      inputTextField.text!,
-                      "toId":      toId,
-                      "fromId":    fromId,
-                      "timestamp": timestamp] as [String : Any]
+        var values = ["toId"       : toId,
+                      "fromId"     : fromId,
+                      "timestamp"  : timestamp] as [String : Any]
+        //$0 = key, $1 = value
+        properties.forEach({ values[$0] = $1 })
+        
         
         childRef.updateChildValues(values) { (error, ref) in
             if (error != nil){
