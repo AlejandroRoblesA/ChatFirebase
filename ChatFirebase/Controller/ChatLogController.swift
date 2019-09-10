@@ -404,7 +404,11 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
         if let keyWindow = UIApplication.shared.keyWindow {
             keyWindow.addSubview(zoomingImageView)
             UIView.animate(withDuration: 0.5, delay: 0, options: .curveEaseOut, animations: {
-                zoomingImageView.frame = CGRect(x: 0, y: 0, width: keyWindow.frame.width, height: startingFrame!.height)
+                
+                // h2 / w1 = h1 / w1
+                // h2 = h1 / w1 * w1
+                let height = startingFrame!.height / startingFrame!.width * keyWindow.frame.width
+                zoomingImageView.frame = CGRect(x: 0, y: 0, width: keyWindow.frame.width, height: height)
                 zoomingImageView.center = keyWindow.center
             }, completion: nil)
         }
