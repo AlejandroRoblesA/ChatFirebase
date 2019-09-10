@@ -394,16 +394,18 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
     }
     
     func performZoomInForStartingImageView (startingImageView: UIImageView){
-        print("Performing zoom")
+        
         let startingFrame  = startingImageView.superview?.convert(startingImageView.frame, to: nil)
-        print(startingFrame)
+       
         let zoomingImageView = UIImageView(frame: startingFrame!)
         zoomingImageView.backgroundColor = .red
+        zoomingImageView.image = startingImageView.image
         
         if let keyWindow = UIApplication.shared.keyWindow {
             keyWindow.addSubview(zoomingImageView)
             UIView.animate(withDuration: 0.5, delay: 0, options: .curveEaseOut, animations: {
                 zoomingImageView.frame = CGRect(x: 0, y: 0, width: keyWindow.frame.width, height: startingFrame!.height)
+                zoomingImageView.center = keyWindow.center
             }, completion: nil)
         }
     }
