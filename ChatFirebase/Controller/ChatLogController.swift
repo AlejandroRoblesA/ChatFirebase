@@ -209,15 +209,19 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellId, for: indexPath) as! ChatMessageCell
         
+        cell.chatLogController = self
+        
         let message = messages[indexPath.item]
         cell.textView.text = message.text
         
         setupCell(cell: cell, message: message)
         if let text = message.text{
             cell.bubbleWidthAnchor?.constant = estimateFrameForText(text: text).width + 32
+            cell.textView.isHidden = false
         }
         else if (message.imageUrl != nil){
             cell.bubbleWidthAnchor?.constant = 200
+            cell.textView.isHidden = true
         }
         return cell
     }
@@ -387,5 +391,20 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         handleSend()
         return true
+    }
+    
+    func performZoomInForStartingImageView (startingImageView: UIImageView){
+        print("Performing zoom")
+        let startingFrame  = startingImageView.superview?.convert(startingImageView.frame, to: nil)
+        print(startingFrame)
+        let zoomingImageView = UIImageView(frame: startingFrame!)
+        zoomingImageView.backgroundColor = .red
+        
+        if let keyWindow = UIApplication.shared.keyWindow {
+            keyWindow.addSubview(zoomingImageView)
+            UIView.animate(withDuration: 0.5, delay: 0, options: .curveEaseOut, animations: {
+                zoomingImageView.frame = CGRect(x: 0, y: 0, width: keyWindow.frame.width, height: startingFrame!.height)
+            }, completion: nil)
+        }
     }
 }
