@@ -14,6 +14,7 @@ import FirebaseStorage
 class ChatLogController: UICollectionViewController, UITextFieldDelegate, UICollectionViewDelegateFlowLayout, UIImagePickerControllerDelegate, UINavigationControllerDelegate{
     
     var startingFrame: CGRect?
+    var blackBackgroundView: UIView?
     
     var user: User?{
         didSet{
@@ -407,16 +408,16 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
         
         if let keyWindow = UIApplication.shared.keyWindow {
             
-            let blackBackgroundView = UIView(frame: keyWindow.frame)
-            blackBackgroundView.backgroundColor = .black
-            blackBackgroundView.alpha = 0
-            keyWindow.addSubview(blackBackgroundView)
+            blackBackgroundView = UIView(frame: keyWindow.frame)
+            blackBackgroundView?.backgroundColor = .black
+            blackBackgroundView?.alpha = 0
+            keyWindow.addSubview(blackBackgroundView!)
             
             
             keyWindow.addSubview(zoomingImageView)
             UIView.animate(withDuration: 0.5, delay: 0, options: .curveEaseOut, animations: {
                 
-                blackBackgroundView.alpha = 1
+                self.blackBackgroundView?.alpha = 1
                 self.inputContainerView.alpha = 0
                 
                 // h2 / w1 = h1 / w1
@@ -430,11 +431,22 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
     
     @objc func handleZoomOut(tapGesture: UITapGestureRecognizer){
         if let zoomOutImageView = tapGesture.view{
-            UIView.animate(withDuration: 0.5, delay: 0, options: .curveEaseOut, animations: {
+            
+            UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
                 zoomOutImageView.frame = self.startingFrame!
-            }, completion: {(completed: Bool) in
-                
-            })
+                self.blackBackgroundView?.alpha = 0
+            }) { ( completed ) in
+                zoomOutImageView.removeFromSuperview()
+            }
+            
+            
+//            UIView.animate(withDuration: 0.5, delay: 0, options: .curveEaseOut, animations: {
+//                zoomOutImageView.frame = self.startingFrame!
+//                self.blackBackgroundView?.alpha = 0
+//            }, completion: {(completed: Bool) in
+//                zoomOutImageView.removeFromSuperview()
+//                
+//            })
         }
     }
 }
