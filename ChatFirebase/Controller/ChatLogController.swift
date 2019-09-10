@@ -13,6 +13,8 @@ import FirebaseStorage
 
 class ChatLogController: UICollectionViewController, UITextFieldDelegate, UICollectionViewDelegateFlowLayout, UIImagePickerControllerDelegate, UINavigationControllerDelegate{
     
+    var startingFrame: CGRect?
+    
     var user: User?{
         didSet{
             navigationItem.title = user?.name
@@ -395,11 +397,13 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
     
     func performZoomInForStartingImageView (startingImageView: UIImageView){
         
-        let startingFrame  = startingImageView.superview?.convert(startingImageView.frame, to: nil)
+        startingFrame  = startingImageView.superview?.convert(startingImageView.frame, to: nil)
        
         let zoomingImageView = UIImageView(frame: startingFrame!)
         zoomingImageView.backgroundColor = .red
         zoomingImageView.image = startingImageView.image
+        zoomingImageView.isUserInteractionEnabled = true
+        zoomingImageView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleZoomOut)))
         
         if let keyWindow = UIApplication.shared.keyWindow {
             
@@ -417,10 +421,20 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
                 
                 // h2 / w1 = h1 / w1
                 // h2 = h1 / w1 * w1
-                let height = startingFrame!.height / startingFrame!.width * keyWindow.frame.width
+                let height = self.startingFrame!.height / self.startingFrame!.width * keyWindow.frame.width
                 zoomingImageView.frame = CGRect(x: 0, y: 0, width: keyWindow.frame.width, height: height)
                 zoomingImageView.center = keyWindow.center
             }, completion: nil)
+        }
+    }
+    
+    @objc func handleZoomOut(tapGesture: UITapGestureRecognizer){
+        if let zoomOutImageView = tapGesture.view{
+            UIView.animate(withDuration: 0.5, delay: 0, options: .curveEaseOut, animations: {
+                zoomOutImageView.frame = self.startingFrame!
+            }, completion: {(completed: Bool) in
+                
+            })
         }
     }
 }
