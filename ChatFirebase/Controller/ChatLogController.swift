@@ -134,7 +134,15 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
                 return
             }
             ref.downloadURL(completion: { (url, error) in
-                print("❗️",url)
+                
+                if let videoUrl = url?.absoluteString{
+                    let properties: [String: Any] = ["videoUrl": videoUrl]
+                    self.sendMessageWithProperties(properties: properties)
+                }
+                //let properties = ["imageUrl"   : imageUrl,
+//                                  "imageWidth" : image.size.width,
+ //                                 "imageHeight": image.size.height] as [String : Any]
+                
             })
         }
         
@@ -142,6 +150,10 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
             if let completedUnitCount = snapshot.progress?.completedUnitCount{
                 self.navigationItem.title = String(completedUnitCount)
             }
+        }
+        
+        uploadTask.observe(.success) { (snapshotS) in
+            self.navigationItem.title = self.user?.name
         }
     }
     
