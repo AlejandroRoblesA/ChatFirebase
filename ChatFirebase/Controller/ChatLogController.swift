@@ -112,6 +112,23 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
     }
     
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        
+        if let videoUrl = info[UIImagePickerController.InfoKey.mediaURL] as? URL{
+            print ("Video selected", videoUrl)
+            
+            let filename = "someFileName.mov"
+            let ref = Storage.storage().reference().child(filename)
+                ref.putFile(from: videoUrl, metadata: nil) { (metadata, error) in
+                if (error != nil){
+                    print("❌",error)
+                    return
+                }
+                    ref.downloadURL(completion: { (url, error) in
+                        print("❗️",url)
+                    })
+            }
+        }
+        
         var selectedImageFromPicker: UIImage?
         
         if let originalImage = info[.originalImage] as? UIImage  {
