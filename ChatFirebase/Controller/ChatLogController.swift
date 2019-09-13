@@ -138,10 +138,16 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
                 if let videoUrl = url?.absoluteString{
                     
                     if let thumbnailImage = self.thumbnailImageForFileUrl(fileUrl: url!){
-                        let properties: [String: Any] = ["videoUrl"   : videoUrl,
-                                                         "imageWidth" : thumbnailImage.size.width,
-                                                         "imageHeight": thumbnailImage.size.height]
-                        self.sendMessageWithProperties(properties: properties)
+                        
+                        self.uploadToFirebaseStorageUsingImage(image: thumbnailImage, completionP: { (imageUrl) in
+                            let properties: [String: Any] = ["videoUrl"   : videoUrl,
+                                                             "imageWidth" : thumbnailImage.size.width,
+                                                             "imageHeight": thumbnailImage.size.height,
+                                                             "imageUrl"   : imageUrl]
+                            self.sendMessageWithProperties(properties: properties)
+                        })
+                        
+                        
                     }
                 }
                 //let properties = ["imageUrl"   : imageUrl,
@@ -188,11 +194,14 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
         }
         
         if let selectedImage = selectedImageFromPicker{
-            uploadToFirebaseStorageUsingImage(image: selectedImage)
+            
+            uploadToFirebaseStorageUsingImage(image: selectedImage) { (imageUrl) in
+                self.sendMessageWithImageUrl(imageUrl: imageUrl, image: selectedImage)
+            }
         }
     }
     
-    private func uploadToFirebaseStorageUsingImage(image: UIImage){
+    private func uploadToFirebaseStorageUsingImage(image: UIImage, completionP: @escaping (_ imageUrl: String) -> ()){
         let imageName = NSUUID().uuidString
         let ref = Storage.storage().reference().child("message_images").child(imageName)
         
@@ -204,7 +213,8 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
                 
                 ref.downloadURL(completion: { (url, error) in
                     if let imageUrl = url?.absoluteString{
-                        self.sendMessageWithImageUrl(imageUrl: imageUrl, image: image)
+                        completionP(imageUrl)
+        
                     }
                 })
             }
