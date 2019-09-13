@@ -298,6 +298,9 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
             cell.bubbleWidthAnchor?.constant = 200
             cell.textView.isHidden = true
         }
+        
+        cell.playButton.isHidden = message.videoUrl == nil
+        
         return cell
     }
     
@@ -452,6 +455,9 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
                 }
                 if let imageHeight = dictionary["imageHeight"] as? NSNumber{
                     message.imageHeight = imageHeight
+                }
+                if let videoUrl = dictionary["videoUrl"] as? String{
+                    message.videoUrl = videoUrl
                 }
                 
                 self.messages.append(message)
