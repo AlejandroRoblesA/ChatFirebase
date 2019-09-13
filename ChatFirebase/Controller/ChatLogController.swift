@@ -116,8 +116,6 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
         if let videoUrl = info[UIImagePickerController.InfoKey.mediaURL] as? URL{
             
             handleVideoSelectedForUrl(url: videoUrl)
-            
-            
         }
         else{
             handleImageSelectedForInfo(info: info)
@@ -127,9 +125,10 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
     }
     
     private func handleVideoSelectedForUrl(url: URL){
-        let filename = "someFileName.mov"
+        
+        let filename = NSUUID().uuidString + ".mov"
         let ref = Storage.storage().reference().child(filename)
-        let uploadTask = Storage.storage().reference().child(filename).putFile(from: url, metadata: nil) { (metadata, error) in
+        let uploadTask = Storage.storage().reference().child("message_movies").child(filename).putFile(from: url, metadata: nil) { (metadata, error) in
             if (error != nil){
                 return
             }
@@ -146,14 +145,8 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
                                                              "imageUrl"   : imageUrl]
                             self.sendMessageWithProperties(properties: properties)
                         })
-                        
-                        
                     }
                 }
-                //let properties = ["imageUrl"   : imageUrl,
-//                                  "imageWidth" : image.size.width,
- //                                 "imageHeight": image.size.height] as [String : Any]
-                
             })
         }
         
@@ -510,7 +503,6 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
                 zoomingImageView.center = keyWindow.center
                 
             }) { ( completed ) in
-                
             }
         }
     }
