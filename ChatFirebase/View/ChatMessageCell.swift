@@ -7,19 +7,32 @@
 //
 
 import UIKit
+import AVFoundation
 
 class ChatMessageCell: UICollectionViewCell {
     
+    var message: Message?
+    
     var chatLogController: ChatLogController?
     
-    let playButton: UIButton = {
+    lazy var playButton: UIButton = {
        let button = UIButton(type: .system)
         button.translatesAutoresizingMaskIntoConstraints = false
         let image = UIImage(named: "play")
         button.tintColor = .white
         button.setImage(image, for: .normal)
+        button.addTarget(self, action: #selector(handlePlay), for: .touchUpInside)
         return button
     }()
+    
+    @objc func handlePlay(){
+        if let videoUrlString = message?.videoUrl,
+           let url = URL(string: videoUrlString){
+            let player = AVPlayer(url: url)
+            player.play()
+            print("Attempting to play this video...")
+        }
+    }
     
     let textView: UITextView = {
        let textView = UITextView()
