@@ -29,6 +29,9 @@ class ChatMessageCell: UICollectionViewCell {
         if let videoUrlString = message?.videoUrl,
            let url = URL(string: videoUrlString){
             let player = AVPlayer(url: url)
+            let playerLayer = AVPlayerLayer(player: player)
+            playerLayer.frame = bubbleView.bounds
+            bubbleView.layer.addSublayer(playerLayer)
             player.play()
             print("Attempting to play this video...")
         }
