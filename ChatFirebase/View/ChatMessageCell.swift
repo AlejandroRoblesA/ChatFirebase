@@ -15,6 +15,9 @@ class ChatMessageCell: UICollectionViewCell {
     
     var chatLogController: ChatLogController?
     
+    var playerLayer: AVPlayerLayer?
+    var player: AVPlayer?
+    
     lazy var playButton: UIButton = {
        let button = UIButton(type: .system)
         button.translatesAutoresizingMaskIntoConstraints = false
@@ -28,13 +31,19 @@ class ChatMessageCell: UICollectionViewCell {
     @objc func handlePlay(){
         if let videoUrlString = message?.videoUrl,
            let url = URL(string: videoUrlString){
-            let player = AVPlayer(url: url)
-            let playerLayer = AVPlayerLayer(player: player)
-            playerLayer.frame = bubbleView.bounds
-            bubbleView.layer.addSublayer(playerLayer)
-            player.play()
+            player = AVPlayer(url: url)
+            playerLayer = AVPlayerLayer(player: player)
+            playerLayer?.frame = bubbleView.bounds
+            bubbleView.layer.addSublayer(playerLayer!)
+            player?.play()
             print("Attempting to play this video...")
         }
+    }
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        playerLayer?.removeFromSuperlayer()
+        player?.pause()
     }
     
     let textView: UITextView = {
