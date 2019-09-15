@@ -33,6 +33,33 @@ class MessagesController: UITableViewController {
         checkIfUserIsLoggedIn()
         
         tableView.register(UserCell.self, forCellReuseIdentifier: cellId)
+        
+        tableView.allowsMultipleSelectionDuringEditing = true
+    }
+    
+    override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
+        return true
+    }
+    
+    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
+        
+        
+        guard let uid = Auth.auth().currentUser?.uid else { return }
+        let message = self.messages?[indexPath.row]
+        if let chatPartnerId = message?.chatPartnerId(){
+            Database.database().reference().child("user-messages").child(uid).child(chatPartnerId).removeValue { (error, ref) in
+                
+                if (error != nil){
+                    print(error!)
+                    return
+                }
+                
+                self.messages?.remove(at: indexPath.row)
+                tableView.deleteRows(at: [indexPath], with: .automatic)
+                
+            }
+        }
+        print(indexPath.row)
     }
 
     func observeUserMessages(){
