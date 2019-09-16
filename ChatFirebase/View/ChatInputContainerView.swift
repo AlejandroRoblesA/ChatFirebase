@@ -11,7 +11,14 @@ import UIKit
 class ChatInputContainerView: UIView, UITextFieldDelegate {
     
     let sendButton = UIButton(type: .system)
-    let uploadImageView = UIImageView()
+    let uploadImageView: UIImageView = {
+        let uploadImageView = UIImageView()
+        uploadImageView.image = UIImage(named: "uploadImage")
+        uploadImageView.translatesAutoresizingMaskIntoConstraints = false
+        uploadImageView.isUserInteractionEnabled = true
+        return uploadImageView
+    }()
+    
     
     var chatLogController: ChatLogController? {
         didSet{
@@ -31,10 +38,7 @@ class ChatInputContainerView: UIView, UITextFieldDelegate {
     override init(frame: CGRect) {
         super.init(frame: frame)
         
-        
-        uploadImageView.image = UIImage(named: "uploadImage")
-        uploadImageView.translatesAutoresizingMaskIntoConstraints = false
-        uploadImageView.isUserInteractionEnabled = true
+        backgroundColor = .white
         
         addSubview(uploadImageView)
         
@@ -76,5 +80,10 @@ class ChatInputContainerView: UIView, UITextFieldDelegate {
     
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        chatLogController?.handleSend()
+        return true
     }
 }

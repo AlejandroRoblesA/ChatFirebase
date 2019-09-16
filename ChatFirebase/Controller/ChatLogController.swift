@@ -424,11 +424,6 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
         }, withCancel: nil)
     }
     
-    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        handleSend()
-        return true
-    }
-    
     func performZoomInForStartingImageView (startingImageView: UIImageView){
         
         self.startingImageView = startingImageView
