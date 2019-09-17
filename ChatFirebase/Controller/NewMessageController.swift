@@ -8,6 +8,7 @@
 
 import UIKit
 import FirebaseDatabase
+import FirebaseAuth
 
 class NewMessageController: UITableViewController {
     
@@ -32,6 +33,8 @@ class NewMessageController: UITableViewController {
     
     func fetchUser() {
         
+        guard let uid = Auth.auth().currentUser?.uid else { return }
+        
         Database.database().reference().child("Users").observeSingleEvent(of: .value, with: { (snapshot) in
             
             for nodo in snapshot.children{
@@ -45,21 +48,22 @@ class NewMessageController: UITableViewController {
                         
                         userData.id = nodoSnap.key
                         
-                        
-                        if let name = nodoAux["name"] as? String{
-                            userData.name = name
-                        }
-                        if let email = nodoAux["email"] as? String{
-                            userData.email = email
-                        }
-                        if let imageURL = nodoAux["profileImageUrl"] as? String{
-                            userData.profileImageUrl = imageURL
-                        }
-                        if (self.users != nil){
-                            self.users?.append(userData)
-                        }
-                        else{
-                            self.users = [userData]
+                        if (uid != userData.id){
+                            if let name = nodoAux["name"] as? String{
+                                userData.name = name
+                            }
+                            if let email = nodoAux["email"] as? String{
+                                userData.email = email
+                            }
+                            if let imageURL = nodoAux["profileImageUrl"] as? String{
+                                userData.profileImageUrl = imageURL
+                            }
+                            if (self.users != nil){
+                                self.users?.append(userData)
+                            }
+                            else{
+                                self.users = [userData]
+                            }
                         }
                     }
                 }
@@ -104,7 +108,6 @@ class NewMessageController: UITableViewController {
             if let user = self.users?[indexPath.row]{
                 self.messagesController?.showChatControllerForUser(user: user)
             }
-            
         }
     }
     

@@ -31,6 +31,7 @@
 		524B91E4E588280CD7FD9C5F /* Pods_ChatFirebase.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_ChatFirebase.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		8F7F75DA06E96DD33E3CDDC1 /* Pods-ChatFirebase.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ChatFirebase.release.xcconfig"; path = "Target Support Files/Pods-ChatFirebase/Pods-ChatFirebase.release.xcconfig"; sourceTree = "<group>"; };
 		A91117ED2318301D00EDA3E4 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
+		A915188B233039E70076C09B /* ChatFirebase.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = ChatFirebase.entitlements; sourceTree = "<group>"; };
 		A91DC66A230E3BB500FDA2AB /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		A92A8B32232F0A0400EB1B73 /* ChatInputContainerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatInputContainerView.swift; sourceTree = "<group>"; };
 		A93E38EC23123B150052BA7F /* NewMessageController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewMessageController.swift; sourceTree = "<group>"; };
@@ -110,6 +111,7 @@
 		A9E47ED1230BA5E400A292ED /* ChatFirebase */ = {
 			isa = PBXGroup;
 			children = (
+				A915188B233039E70076C09B /* ChatFirebase.entitlements */,
 				A91117EC23182FF200EDA3E4 /* Helpers */,
 				A93E38EE23124A930052BA7F /* Model */,
 				A9966031231C5FE600C643C1 /* View */,
@@ -187,6 +189,11 @@
 				TargetAttributes = {
 					A9E47ECE230BA5E400A292ED = {
 						CreatedOnToolsVersion = 10.3;
+						SystemCapabilities = {
+							com.apple.Keychain = {
+								enabled = 1;
+							};
+						};
 					};
 				};
 			};
@@ -427,6 +434,7 @@
 			baseConfigurationReference = 23C3474BD0CB81C6272506EC /* Pods-ChatFirebase.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = ChatFirebase/ChatFirebase.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 3RKND3ZKAJ;
 				INFOPLIST_FILE = ChatFirebase/Info.plist;
@@ -446,6 +454,7 @@
 			baseConfigurationReference = 8F7F75DA06E96DD33E3CDDC1 /* Pods-ChatFirebase.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = ChatFirebase/ChatFirebase.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 3RKND3ZKAJ;
 				INFOPLIST_FILE = ChatFirebase/Info.plist;
